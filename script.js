@@ -3,7 +3,7 @@ var completedButton = document.getElementById("clear-completed-button");
 var emptyButton = document.getElementById("empty-button");
 var saveButton = document.getElementById("save-button");
 var todoEntryBox = document.getElementById("todo-entry-box");
-var tofoList = document.getElementById("todo-list");
+var todoList = document.getElementById("todo-list");
 var form = document.querySelector("form");
 
 addButton.addEventListener("click", addTodoItem);
@@ -25,25 +25,60 @@ function addTodoItem() {
   newTodoItem(itemText, false);
 }
 function clearCompletedTodoItems() {
-  alert("clear button clicked");
+  var completedItems = todoList.getElementsByClassName("completed");
+  while (completedItems.length > 0) {
+    completedItems.item(0).remove();
+  }
 }
 function emptyList() {
-  alert("empty button clicked");
+  var todoItems = todoList.children;
+  while (todoItems.length > 0) {
+    todoItems.item(0).remove();
+  }
 }
 function saveList() {
-  alert("Save button clicked");
+  var todos = [];
+  for (var i = 0; i < todoList.children.length; i++) {
+    var todo = todoList.children.item(i);
+
+    var todoInfo = {
+      task: todo.innerText,
+      completed: todo.classList.contains("completed"),
+    };
+    todos.push(todoInfo);
+  }
+  localStorage.setItem("todos", JSON.stringify(todos));
 }
 
-function newTodoItem(itemText) {
+function newTodoItem(itemText, completed) {
   var todoItem = document.createElement("li");
   var todoText = document.createTextNode(itemText);
   todoItem.appendChild(todoText);
 
   if (completed) {
     todoItem.classList.add("completed");
-    return false;
   }
 
   todoList.appendChild(todoItem);
   todoItem.addEventListener("dblclick", toggleTodoItemState);
 }
+
+function toggleTodoItemState() {
+  if (this.classList.contains("completed")) {
+    this.classList.remove("completed");
+  } else {
+    this.classList.add("completed");
+  }
+}
+
+function loadList() {
+  if (localStorage.getItem("todos") != null) {
+    var todo = JSON.parse(localStorage.getItem("todos"));
+
+    for (var i = 0; i < todos.length; i++) {
+      var todo = todo[i];
+      newTodoItem(rodo.task, todo.completed);
+    }
+  }
+}
+loadList();
